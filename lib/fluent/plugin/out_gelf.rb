@@ -37,7 +37,7 @@ class GELFOutput < BufferedOutput
     gelfentry = { :timestamp => time, :_tag => tag }
 
     record.each_pair do |k,v|
-      case k
+      case k.to_s
       when 'version' then
         gelfentry[:_version] = v
       when 'timestamp' then
@@ -50,7 +50,7 @@ class GELFOutput < BufferedOutput
         # emergency and alert aren't supported by gelf-rb
         when '0', 'emergency' then gelfentry[:level] = GELF::UNKNOWN
         when '1', 'alert' then gelfentry[:level] = GELF::UNKNOWN
-        when '2', 'critical', 'crit' then gelfentry[:level] = GELF::FATAL
+        when '2', 'critical', 'crit', 'fatal error', 'fatal' then gelfentry[:level] = GELF::FATAL
         when '3', 'error', 'err' then gelfentry[:level] = GELF::ERROR
         when '4', 'warning', 'warn' then gelfentry[:level] = GELF::WARN
         # gelf-rb also skips notice
@@ -69,7 +69,7 @@ class GELFOutput < BufferedOutput
       when 'short_message', 'full_message', 'facility', 'line', 'file' then
         gelfentry[k] = v
       else
-        gelfentry['_'+k] = v
+        gelfentry['_' + k.to_s] = v 
       end
     end
 
